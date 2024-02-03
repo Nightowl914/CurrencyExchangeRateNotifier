@@ -1,7 +1,7 @@
 # CurrencyExchangeRateNotifier
 
 ## Introduction
-A Python script to monitor and notify you about changes in the exchange rate of a specified currency to Malaysian Ringgit (MYR). The script uses web scraping to fetch real-time exchange rate information from Google Search and sends email notifications when the rate falls or rises beyond a predefined rate.
+A Python script to monitor and notify user about changes in the exchange rate of a specified currency to Malaysian Ringgit (MYR). The script uses web scraping to fetch real-time exchange rate information from Google Search and sends email notifications when the rate falls or rises beyond a predefined rate.
 
 ## Instructions
 1. #### Clone the Repository:
