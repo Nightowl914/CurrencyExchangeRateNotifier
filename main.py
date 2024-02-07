@@ -35,7 +35,7 @@ def check_rate():
     return converted_rate, info
 
 # Function used to send email notification
-def send_mail(email, pwd, info, compare_rate, converted_rate, subject):
+def send_mail(email, recipient, pwd, info, compare_rate, converted_rate, subject):
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.ehlo()
     server.starttls()
@@ -44,13 +44,13 @@ def send_mail(email, pwd, info, compare_rate, converted_rate, subject):
     server.login(email, pwd)
 
     subject = subject
-    body = f"The exchange rate has gone from {compare_rate} to {converted_rate}!\n\nThe current exchange rate is {info}.\n\nCheck the currency status through this link:\nhttps://www.google.com/search?q={exchange_currency}+to+myr&sca_esv=44922cbe319e9a1e&rlz=1C1GCEA_enMY1020MY1020&sxsrf=ACQVn0_OqfYe4b-mSTnXUOZNdrM_jxVmDQ%3A1706873512143&ei=qNK8ZbGmCLyz4-EPuYqvuAo&ved=0ahUKEwixmviqx4yEAxW82TgGHTnFC6cQ4dUDCBA&uact=5&oq=sgd+to+myr&gs_lp=Egxnd3Mtd2l6LXNlcnAiCnNnZCB0byBteXIyBxAjGOoCGCcyBxAjGOoCGCcyBxAjGOoCGCcyBxAjGOoCGCcyBxAjGOoCGCcyBxAjGOoCGCcyBxAjGOoCGCcyBxAjGOoCGCcyBxAjGOoCGCcyBxAjGOoCGCcyExAAGIAEGIoFGEMY6gIYtALYAQEyExAAGIAEGIoFGEMY6gIYtALYAQEyExAAGIAEGIoFGEMY6gIYtALYAQEyExAAGIAEGIoFGEMY6gIYtALYAQEyExAAGIAEGIoFGEMY6gIYtALYAQEyExAAGIAEGIoFGEMY6gIYtALYAQEyExAAGIAEGIoFGEMY6gIYtALYAQEyExAAGIAEGIoFGEMY6gIYtALYAQEyExAAGIAEGIoFGEMY6gIYtALYAQEyExAAGIAEGIoFGEMY6gIYtALYAQFIhhdQAFi-E3ABeAGQAQCYAQCgAQCqAQC4AQPIAQD4AQGoAhTiAwQYACBBugYGCAEQARgB&sclient=gws-wiz-serp"
+    body = f"The exchange rate has gone from {compare_rate} to {converted_rate}!\n\nThe current exchange rate is {info}.\n\nCheck the currency status through this link:\n{url}"
 
     msg = f"Subject: {subject}\n\n{body}"
 
     server.sendmail(
         email,
-        email,
+        recipient,
         msg
     )
     print("Email Successfully Sent!")
@@ -61,6 +61,7 @@ def send_mail(email, pwd, info, compare_rate, converted_rate, subject):
 def main():
     compare_rate = 3.51
     email = "your email"
+    recipient = "recipient email"
     pwd = "your password"
 
     # Execute the check_rate function to print the info and return the values as tuple
@@ -71,9 +72,9 @@ def main():
     info = exchange_rate_info[1]
     # Check if the current exchange rate is lesser or greater than the predefined rate and pass the data as parameters into the send_mail function
     if (converted_rate < compare_rate):
-        send_mail(email, pwd, info, compare_rate, converted_rate, "The exchange rate has fallen!")
+        send_mail(email, recipient, pwd, info, compare_rate, converted_rate, "The exchange rate has fallen!")
     elif (converted_rate > compare_rate):
-        send_mail(email, pwd, info, compare_rate, converted_rate, "The exchange rate has risen!")
+        send_mail(email, recipient, pwd, info, compare_rate, converted_rate, "The exchange rate has risen!")
         
 if __name__ == "__main__":
     while(True):
