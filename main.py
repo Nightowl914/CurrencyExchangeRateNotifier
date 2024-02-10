@@ -1,7 +1,13 @@
+import os
 import requests
 from bs4 import BeautifulSoup
 import smtplib
 import time
+import schedule
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Ask user to enter a currency of their choice (e.g., "sgd", "usd")
 exchange_currency = input("Enter a currency: ")
@@ -13,6 +19,9 @@ url = f"https://www.google.com/search?q={exchange_currency}+to+myr&sca_esv=44922
 headers = {
     "User-Agent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 }
+
+# Global variable to store the previous exchange rate
+previous_exchange_rate = 3.53
 
 # Function used to extract exchange rate information
 def check_rate():
@@ -28,14 +37,14 @@ def check_rate():
     # Convert exchange rate into float value
     converted_rate = float(exchange_rate)
 
-    info = f"{title_start} {converted_rate} {title_end}"
+    info = f"{title_start} {converted_rate} {title_end}."
     print(info)
     
     # Return value as tuple
     return converted_rate, info
 
 # Function used to send email notification
-def send_mail(email, recipient, pwd, info, compare_rate, converted_rate, subject):
+def send_mail(email, recipient, pwd, subject, text):
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.ehlo()
     server.starttls()
@@ -44,7 +53,7 @@ def send_mail(email, recipient, pwd, info, compare_rate, converted_rate, subject
     server.login(email, pwd)
 
     subject = subject
-    body = f"The exchange rate has gone from {compare_rate} to {converted_rate}!\n\nThe current exchange rate is {info}.\n\nCheck the currency status through this link:\n{url}"
+    body = f"{text}\n\nCheck the currency status through this link:\n{url}"
 
     msg = f"Subject: {subject}\n\n{body}"
 
@@ -59,10 +68,10 @@ def send_mail(email, recipient, pwd, info, compare_rate, converted_rate, subject
 
 # Main function to execute the script
 def main():
-    compare_rate = 3.51
-    email = "your email"
-    recipient = "recipient email"
-    pwd = "your password"
+    global previous_exchange_rate 
+    email = os.environ.get('SENDER_EMAIL')
+    recipient = os.environ.get('RECIPIENT_EMAIL')
+    pwd = os.environ.get('SENDER_EMAIL_PASSWORD')
 
     # Execute the check_rate function to print the info and return the values as tuple
     exchange_rate_info = check_rate()
@@ -70,15 +79,25 @@ def main():
     converted_rate = exchange_rate_info[0]
     # Extract the value from the tuple, exchange_rate_info with the index of 1 which is the info
     info = exchange_rate_info[1]
-    # Check if the current exchange rate is lesser or greater than the predefined rate and pass the data as parameters into the send_mail function
-    if (converted_rate < compare_rate):
-        send_mail(email, recipient, pwd, info, compare_rate, converted_rate, "The exchange rate has fallen!")
-    elif (converted_rate > compare_rate):
-        send_mail(email, recipient, pwd, info, compare_rate, converted_rate, "The exchange rate has risen!")
+
+    if previous_exchange_rate is not None:
+        # Check if the current exchange rate is lesser or greater than the predefined rate and pass the data as parameters into the send_mail function
+        if (converted_rate < previous_exchange_rate):
+            send_mail(email, recipient, pwd, "The Exchange Rate Has Fallen!", f"The exchange rate has gone from {previous_exchange_rate} to {converted_rate}\n\nThe current exchange rate is {info}")
+        elif (converted_rate > previous_exchange_rate):
+            send_mail(email, recipient, pwd, "The Exchange Rate Has Risen!", f"The exchange rate has gone from {previous_exchange_rate} to {converted_rate}!\n\nThe current exchange rate is {info}")
+        elif (converted_rate == previous_exchange_rate):
+            send_mail(email, recipient, pwd, "Exchange Rate Update", f"The current exchange rate still remain the same at {info}")
+
+    # Update previous_flight_price with the latest exchange rate
+    previous_exchange_rate = converted_rate
         
 if __name__ == "__main__":
-    while(True):
-        main()
-        # Loop the script every 1 hour to check if the rate has fallen or risen
-        time.sleep(3600)
+    # Schedule the script to run at specified time using schedule library
+    schedule.every().day.at("08:30").do(main)
+    schedule.every().day.at("14:00").do(main)
+    schedule.every().day.at("23:43").do(main)
 
+    while True:
+        schedule.run_pending()
+        time.sleep(1) 
