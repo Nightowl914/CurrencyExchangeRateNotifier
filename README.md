@@ -17,6 +17,7 @@ pip install requests beautifulsoup4 schedule python-dotenv
 3. #### Run the Script:
 - ##### Open the script in a text editor.
 - ##### Modify the exchange_currency variable to the currency of your choice or use it as user input (e.g., "sgd", "usd").
+- ##### Set your 'User-Agent' by Googling your user agent and copying it to the headers.
 - ##### Set your email and password for sending notifications by adding the following environment variables to the .env file:
   ```
   SENDER_EMAIL=your_email@gmail.com
