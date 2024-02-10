@@ -89,7 +89,7 @@ def main():
         elif (converted_rate == previous_exchange_rate):
             send_mail(email, recipient, pwd, "Exchange Rate Update", f"The current exchange rate still remain the same at {info}")
 
-    # Update previous_flight_price with the latest exchange rate
+    # Update previous_exchange_rate with the latest exchange rate
     previous_exchange_rate = converted_rate
         
 if __name__ == "__main__":
