@@ -17,7 +17,7 @@ url = f"https://www.google.com/search?q={exchange_currency}+to+myr&sca_esv=44922
 
 # User Agent
 headers = {
-    "User-Agent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    "User-Agent": 'Your User Agent'
 }
 
 # Global variable to store the previous exchange rate
