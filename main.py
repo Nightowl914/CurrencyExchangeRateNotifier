@@ -81,7 +81,7 @@ def main():
     info = exchange_rate_info[1]
 
     if previous_exchange_rate is not None:
-        # Check if the current exchange rate is lesser or greater than the predefined rate and pass the data as parameters into the send_mail function
+        # Compare rates and pass relevant data as parameters to the send_mail function
         if (converted_rate < previous_exchange_rate):
             send_mail(email, recipient, pwd, "The Exchange Rate Has Fallen!", f"The exchange rate has gone from {previous_exchange_rate} to {converted_rate}\n\nThe current exchange rate is {info}")
         elif (converted_rate > previous_exchange_rate):
